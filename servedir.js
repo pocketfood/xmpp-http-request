@@ -25,16 +25,24 @@ const xmpp = client({
   });
 
   xmpp.on("online", async () => {
+      
+    // Connecting to groupchat
+    xmpp.send(xml('presence', {from: 'user@domain.com',
+    to: 'groupchat@conference.example.com/username'},
+    xml('x', {xmlns: 'http://jabber.org/protocol/muc'})));
+
+      
     app.use('/', function (req, res) {
       
       res.send('<img src="meme.png" alt="meme.png" class="transparent overflowingVertical">')
     const date = new Date();
 
-    const message = xml(
-      "message",
-      { type: "chat", to: 'user' },
-      xml("body", {}, date,'[ ',req.ip,' ][ ',req.path,' ] '),
-    );
+     const message = xml(
+       "message",
+       { type: "groupchat", to: 'groupchat@conference.example.com' },
+       xml("body", {}, date,'[ ',req.headers['x-forwarded-for'],' ][ ',req.header('User-Agent'),']','[',req.path,' ] '),
+     );
+
 
     xmpp.send(message);
     
